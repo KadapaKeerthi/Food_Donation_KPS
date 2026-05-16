@@ -632,7 +632,7 @@ export default function RegisterPage() {
               {error && <div className="rg-error">⚠️ {error}</div>}
               {success && <div className="rg-success">✅ {success}</div>}
 
-              {/* Google Sign-Up */}
+              {/* Google Sign-Up
               <button
                 type="button"
                 className="rg-btn-google"
@@ -640,9 +640,9 @@ export default function RegisterPage() {
                 disabled={googleLoading || loading}
               >
                 {googleLoading ? 'Connecting...' : <><GoogleIcon /> Sign up with Google</>}
-              </button>
+              </button> */}
 
-              <div className="rg-divider"><span>or fill in your details</span></div>
+              {/* <div className="rg-divider"><span>or fill in your details</span></div> */}
 
               <form className="rg-form" onSubmit={handleRegister} noValidate>
 

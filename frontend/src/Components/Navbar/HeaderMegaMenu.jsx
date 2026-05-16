@@ -1,11 +1,26 @@
 import { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
+import { getIsLoggedIn, getName, getUserAvatar, removeUser } from '../../redux/slices/User'
 import styles from './HeaderMegaMenu.module.css'
 
 export function HeaderMegaMenu() {
   const [menuOpen, setMenuOpen] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+
+  const isLoggedIn = useSelector(getIsLoggedIn)
+  const name = useSelector(getName)
+  const avatar = useSelector(getUserAvatar)
+
   const isLoginPage = location.pathname === '/login'
+
+  const handleLogout = () => {
+    dispatch(removeUser())
+    setMenuOpen(false)
+    navigate('/login')
+  }
 
   return (
     <div style={{ position: 'relative' }}>
@@ -22,7 +37,26 @@ export function HeaderMegaMenu() {
 
         {/* Auth Buttons — top right */}
         <div className={styles.actions}>
-          {isLoginPage ? (
+          {isLoggedIn ? (
+            <>
+              {/* Avatar + name */}
+              <div className={styles.userInfo}>
+                {avatar ? (
+                  <img src={avatar} alt={name} className={styles.avatar} />
+                ) : (
+                  <div className={styles.avatarFallback}>
+                    {name?.charAt(0)?.toUpperCase() || 'U'}
+                  </div>
+                )}
+                <span className={styles.userName}>{name?.split(' ')[0]}</span>
+              </div>
+
+              {/* Logout button */}
+              <button className={styles.btnOutline} onClick={handleLogout}>
+                Logout
+              </button>
+            </>
+          ) : isLoginPage ? (
             <Link to="/register" className={styles.btnPrimary}>
               Create Account
             </Link>
@@ -49,8 +83,28 @@ export function HeaderMegaMenu() {
       {/* Mobile Drawer */}
       {menuOpen && (
         <div className={styles.drawer}>
-          <Link to="/login" className={styles.drawerLink} onClick={() => setMenuOpen(false)}>Sign In</Link>
-          <Link to="/register" className={styles.drawerLink} onClick={() => setMenuOpen(false)}>Register</Link>
+          {isLoggedIn ? (
+            <>
+              <div className={styles.drawerUser}>
+                {avatar ? (
+                  <img src={avatar} alt={name} className={styles.avatar} />
+                ) : (
+                  <div className={styles.avatarFallback}>
+                    {name?.charAt(0)?.toUpperCase() || 'U'}
+                  </div>
+                )}
+                <span>{name}</span>
+              </div>
+              <button className={styles.drawerLink} onClick={handleLogout}>
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className={styles.drawerLink} onClick={() => setMenuOpen(false)}>Sign In</Link>
+              <Link to="/register" className={styles.drawerLink} onClick={() => setMenuOpen(false)}>Register</Link>
+            </>
+          )}
         </div>
       )}
     </div>
