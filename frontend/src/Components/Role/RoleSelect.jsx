@@ -298,7 +298,7 @@ export default function RoleSelectPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
-  const dispatch = useDispatch()
+
 
   // Get user name from Redux store if available
   const user = useSelector((state) => state.auth?.user || state.user?.user || null)
@@ -309,7 +309,8 @@ export default function RoleSelectPage() {
     setError('')
     setLoading(true)
     try {
-      const res = await service.put('users/profile', { role: selected })
+      await service.put('users/profile', { role: selected })
+
       // Update Redux store with new role if you have an action
       // dispatch(updateUserRole(selected))
       if (selected === 'donor') {

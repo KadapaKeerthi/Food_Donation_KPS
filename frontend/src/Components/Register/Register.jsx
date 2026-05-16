@@ -532,6 +532,7 @@ export default function RegisterPage() {
         err?.response?.data?.message ||
         'Registration failed. Please try again.'
       )
+
     } finally {
       setLoading(false)
     }
