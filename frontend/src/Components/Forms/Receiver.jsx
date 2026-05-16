@@ -1,7 +1,5 @@
 import { useState } from "react";
 
-
-
 const foodNeeds = [
   "Cooked Meals", "Raw Vegetables", "Fruits", "Dairy Products",
   "Baked Goods", "Canned/Packaged Food", "Beverages", "Any / No Preference"
@@ -17,10 +15,10 @@ export default function ReceiverForm() {
   const [submitted, setSubmitted] = useState(false);
   const [logoUrl, setLogoUrl] = useState(null);
   const [form, setForm] = useState({
-    fullName: "", email: "", phone: "", address: "",
+    address: "",
     receiverType: "", orgName: "",
     foodNeeds: [], numberOfPeople: "", urgency: "normal",
-    deliveryDate: "", deliveryTime: "", deliveryNotes: "",
+    deliveryNotes: "",
     agreeTerms: false,
   });
   const [errors, setErrors] = useState({});
@@ -52,9 +50,6 @@ export default function ReceiverForm() {
   const validateStep = (s) => {
     const e = {};
     if (s === 1) {
-      if (!form.fullName.trim()) e.fullName = "Name is required";
-      if (!form.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) e.email = "Valid email required";
-      if (!form.phone.match(/^\d{10}$/)) e.phone = "10-digit phone required";
       if (!form.address.trim()) e.address = "Delivery address is required";
       if (!form.receiverType) e.receiverType = "Please select receiver type";
     }
@@ -62,10 +57,6 @@ export default function ReceiverForm() {
       if (form.foodNeeds.length === 0) e.foodNeeds = "Select at least one food need";
       if (!form.numberOfPeople || isNaN(form.numberOfPeople) || Number(form.numberOfPeople) <= 0)
         e.numberOfPeople = "Enter number of people";
-    }
-    if (s === 3) {
-      if (!form.deliveryDate) e.deliveryDate = "Delivery date required";
-      if (!form.deliveryTime) e.deliveryTime = "Delivery time required";
       if (!form.agreeTerms) e.agreeTerms = "Please agree to continue";
     }
     return e;
@@ -80,7 +71,7 @@ export default function ReceiverForm() {
   const back = () => setStep(s => s - 1);
 
   const submit = () => {
-    const e = validateStep(3);
+    const e = validateStep(2);
     if (Object.keys(e).length) { setErrors(e); return; }
     setSubmitted(true);
   };
@@ -89,25 +80,24 @@ export default function ReceiverForm() {
     setSubmitted(false);
     setStep(1);
     setForm({
-      fullName: "", email: "", phone: "", address: "",
+      address: "",
       receiverType: "", orgName: "",
       foodNeeds: [], numberOfPeople: "", urgency: "normal",
-      deliveryDate: "", deliveryTime: "", deliveryNotes: "",
+      deliveryNotes: "",
       agreeTerms: false,
     });
   };
 
-  const today = new Date().toISOString().split("T")[0];
-  const steps = ["Receiver Info", "Food Request", "Delivery & Submit"];
+  const steps = ["Receiver Info", "Food Request"];
 
   if (submitted) return (
     <div style={styles.page}>
       <div style={styles.successCard}>
         <div style={styles.successIcon}>🤝</div>
-        <h2 style={styles.successTitle}>Request Received, {form.fullName.split(" ")[0]}!</h2>
+        <h2 style={styles.successTitle}>Request Received!</h2>
         <p style={styles.successText}>
           Your food request for <strong>{form.numberOfPeople} people</strong> has been submitted.
-          We'll arrange delivery on <strong>{form.deliveryDate}</strong> at <strong>{form.deliveryTime}</strong>.
+          Our team will get in touch to arrange delivery soon.
         </p>
         <p style={styles.successSub}>Help is on the way. You are not alone. 🍱</p>
         <button style={styles.resetBtn} onClick={resetForm}>Submit Another Request</button>
@@ -138,7 +128,7 @@ export default function ReceiverForm() {
         </div>
       </div>
 
-      {/* Progress */}
+      {/* Progress — 2 steps */}
       <div style={styles.progressWrap}>
         {steps.map((label, i) => (
           <div key={i} style={styles.stepItem}>
@@ -146,7 +136,7 @@ export default function ReceiverForm() {
               {step > i + 1 ? "✓" : i + 1}
             </div>
             <span style={{ ...styles.stepLabel, color: step === i + 1 ? "#3b82f6" : "#475569", fontWeight: step === i + 1 ? 700 : 400 }}>{label}</span>
-            {i < 2 && <div style={{ ...styles.stepLine, background: step > i + 1 ? "#22c55e" : "#1e293b" }} />}
+            {i < 1 && <div style={{ ...styles.stepLine, background: step > i + 1 ? "#22c55e" : "#1e293b" }} />}
           </div>
         ))}
       </div>
@@ -155,21 +145,9 @@ export default function ReceiverForm() {
       <div style={styles.card}>
         <h2 style={styles.cardTitle}>{steps[step - 1]}</h2>
 
-        {/* Step 1 - Receiver Info */}
+        {/* Step 1 — Receiver Info */}
         {step === 1 && (
           <div style={styles.fields}>
-            <label style={styles.label}>Full Name / Contact Person *</label>
-            <input style={{ ...styles.input, ...(errors.fullName ? styles.inputErr : {}) }} placeholder="e.g. Ravi Kumar" value={form.fullName} onChange={e => update("fullName", e.target.value)} />
-            {errors.fullName && <span style={styles.err}>{errors.fullName}</span>}
-
-            <label style={styles.label}>Email Address *</label>
-            <input style={{ ...styles.input, ...(errors.email ? styles.inputErr : {}) }} type="email" placeholder="you@example.com" value={form.email} onChange={e => update("email", e.target.value)} />
-            {errors.email && <span style={styles.err}>{errors.email}</span>}
-
-            <label style={styles.label}>Phone Number *</label>
-            <input style={{ ...styles.input, ...(errors.phone ? styles.inputErr : {}) }} placeholder="10-digit mobile number" maxLength={10} value={form.phone} onChange={e => update("phone", e.target.value.replace(/\D/, ""))} />
-            {errors.phone && <span style={styles.err}>{errors.phone}</span>}
-
             <label style={styles.label}>Receiver Type *</label>
             <select style={{ ...styles.input, ...(errors.receiverType ? styles.inputErr : {}) }} value={form.receiverType} onChange={e => update("receiverType", e.target.value)}>
               <option value="">-- Select type --</option>
@@ -190,7 +168,7 @@ export default function ReceiverForm() {
           </div>
         )}
 
-        {/* Step 2 - Food Request */}
+        {/* Step 2 — Food Request */}
         {step === 2 && (
           <div style={styles.fields}>
             <label style={styles.label}>Food Needed * <span style={{ color: "#475569", fontWeight: 400 }}>(select all that apply)</span></label>
@@ -235,19 +213,6 @@ export default function ReceiverForm() {
                 </button>
               ))}
             </div>
-          </div>
-        )}
-
-        {/* Step 3 - Delivery & Submit */}
-        {step === 3 && (
-          <div style={styles.fields}>
-            <label style={styles.label}>Preferred Delivery Date *</label>
-            <input style={{ ...styles.input, ...(errors.deliveryDate ? styles.inputErr : {}) }} type="date" min={today} value={form.deliveryDate} onChange={e => update("deliveryDate", e.target.value)} />
-            {errors.deliveryDate && <span style={styles.err}>{errors.deliveryDate}</span>}
-
-            <label style={styles.label}>Preferred Delivery Time *</label>
-            <input style={{ ...styles.input, ...(errors.deliveryTime ? styles.inputErr : {}) }} type="time" value={form.deliveryTime} onChange={e => update("deliveryTime", e.target.value)} />
-            {errors.deliveryTime && <span style={styles.err}>{errors.deliveryTime}</span>}
 
             <label style={styles.label}>Additional Notes <span style={{ color: "#475569", fontWeight: 400 }}>(optional)</span></label>
             <textarea style={{ ...styles.input, ...styles.textarea }} placeholder="Dietary restrictions, allergies, access instructions..." value={form.deliveryNotes} onChange={e => update("deliveryNotes", e.target.value)} />
@@ -255,12 +220,12 @@ export default function ReceiverForm() {
             {/* Summary */}
             <div style={styles.summary}>
               <p style={styles.summaryTitle}>📋 Request Summary</p>
-              <div style={styles.summaryRow}><span>Name</span><span>{form.fullName}</span></div>
               <div style={styles.summaryRow}><span>Type</span><span>{form.receiverType}</span></div>
+              {form.orgName && <div style={styles.summaryRow}><span>Organisation</span><span>{form.orgName}</span></div>}
+              <div style={styles.summaryRow}><span>Address</span><span style={{ textAlign: "right", maxWidth: 200 }}>{form.address}</span></div>
               <div style={styles.summaryRow}><span>People</span><span>{form.numberOfPeople}</span></div>
               <div style={styles.summaryRow}><span>Food Needs</span><span style={{ textAlign: "right", maxWidth: 200 }}>{form.foodNeeds.join(", ")}</span></div>
               <div style={styles.summaryRow}><span>Urgency</span><span style={{ textTransform: "capitalize" }}>{form.urgency}</span></div>
-              <div style={styles.summaryRow}><span>Delivery</span><span>{form.deliveryDate} at {form.deliveryTime}</span></div>
             </div>
 
             <label style={styles.checkRow}>
@@ -274,7 +239,7 @@ export default function ReceiverForm() {
         {/* Buttons */}
         <div style={styles.btnRow}>
           {step > 1 && <button style={styles.backBtn} onClick={back}>← Back</button>}
-          {step < 3
+          {step < 2
             ? <button style={styles.nextBtn} onClick={next}>Next →</button>
             : <button style={styles.submitBtn} onClick={submit}>Submit Request 🤝</button>
           }

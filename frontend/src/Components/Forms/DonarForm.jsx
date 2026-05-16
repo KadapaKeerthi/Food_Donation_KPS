@@ -20,8 +20,9 @@ export default function DonorForm() {
       reader.readAsDataURL(file);
     }
   };
+
   const [form, setForm] = useState({
-    fullName: "", email: "", phone: "", address: "",
+    address: "",
     foodCategory: "", foodDescription: "", quantity: "", unit: "kg",
     expiryDate: "", pickupDate: "", pickupTime: "", specialNotes: "",
     anonymous: false, agreeTerms: false,
@@ -36,18 +37,13 @@ export default function DonorForm() {
   const validateStep = (s) => {
     const e = {};
     if (s === 1) {
-      if (!form.fullName.trim()) e.fullName = "Name is required";
-      if (!form.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) e.email = "Valid email required";
-      if (!form.phone.match(/^\d{10}$/)) e.phone = "10-digit phone required";
       if (!form.address.trim()) e.address = "Address is required";
-    }
-    if (s === 2) {
       if (!form.foodCategory) e.foodCategory = "Select a category";
       if (!form.foodDescription.trim()) e.foodDescription = "Describe the food";
       if (!form.quantity || isNaN(form.quantity) || Number(form.quantity) <= 0) e.quantity = "Enter valid quantity";
       if (!form.expiryDate) e.expiryDate = "Expiry date required";
     }
-    if (s === 3) {
+    if (s === 2) {
       if (!form.pickupDate) e.pickupDate = "Pickup date required";
       if (!form.pickupTime) e.pickupTime = "Pickup time required";
       if (!form.agreeTerms) e.agreeTerms = "Please agree to continue";
@@ -64,26 +60,28 @@ export default function DonorForm() {
   const back = () => setStep(s => s - 1);
 
   const submit = () => {
-    const e = validateStep(3);
+    const e = validateStep(2);
     if (Object.keys(e).length) { setErrors(e); return; }
     setSubmitted(true);
   };
 
   const today = new Date().toISOString().split("T")[0];
-
-  const steps = ["Donor Info", "Food Details", "Pickup & Submit"];
+  const steps = ["Food Details", "Pickup & Submit"];
 
   if (submitted) return (
     <div style={styles.page}>
       <div style={styles.successCard}>
         <div style={styles.successIcon}>🌱</div>
-        <h2 style={styles.successTitle}>Thank You, {form.fullName.split(" ")[0]}!</h2>
+        <h2 style={styles.successTitle}>Thank You!</h2>
         <p style={styles.successText}>
           Your donation of <strong>{form.quantity} {form.unit}</strong> of <strong>{form.foodCategory}</strong> has been registered.
           We'll confirm your pickup on <strong>{form.pickupDate}</strong> at <strong>{form.pickupTime}</strong>.
         </p>
         <p style={styles.successSub}>Together, we fight hunger one meal at a time. 🍱</p>
-        <button style={styles.resetBtn} onClick={() => { setSubmitted(false); setStep(1); setForm({ fullName:"",email:"",phone:"",address:"",foodCategory:"",foodDescription:"",quantity:"",unit:"kg",expiryDate:"",pickupDate:"",pickupTime:"",specialNotes:"",anonymous:false,agreeTerms:false }); }}>
+        <button style={styles.resetBtn} onClick={() => {
+          setSubmitted(false); setStep(1);
+          setForm({ address:"",foodCategory:"",foodDescription:"",quantity:"",unit:"kg",expiryDate:"",pickupDate:"",pickupTime:"",specialNotes:"",anonymous:false,agreeTerms:false });
+        }}>
           Donate Again
         </button>
       </div>
@@ -112,7 +110,7 @@ export default function DonorForm() {
         </div>
       </div>
 
-      {/* Progress */}
+      {/* Progress — 2 steps */}
       <div style={styles.progressWrap}>
         {steps.map((label, i) => (
           <div key={i} style={styles.stepItem}>
@@ -120,7 +118,7 @@ export default function DonorForm() {
               {step > i + 1 ? "✓" : i + 1}
             </div>
             <span style={{ ...styles.stepLabel, color: step === i + 1 ? "#f97316" : "#94a3b8", fontWeight: step === i + 1 ? 700 : 400 }}>{label}</span>
-            {i < 2 && <div style={{ ...styles.stepLine, background: step > i + 1 ? "#22c55e" : "#e2e8f0" }} />}
+            {i < 1 && <div style={{ ...styles.stepLine, background: step > i + 1 ? "#22c55e" : "#e2e8f0" }} />}
           </div>
         ))}
       </div>
@@ -129,35 +127,13 @@ export default function DonorForm() {
       <div style={styles.card}>
         <h2 style={styles.cardTitle}>{steps[step - 1]}</h2>
 
-        {/* Step 1 */}
+        {/* Step 1 — Food Details + Address */}
         {step === 1 && (
           <div style={styles.fields}>
-            <label style={styles.label}>Full Name *</label>
-            <input style={{ ...styles.input, ...(errors.fullName ? styles.inputErr : {}) }} placeholder="e.g. Priya Sharma" value={form.fullName} onChange={e => update("fullName", e.target.value)} />
-            {errors.fullName && <span style={styles.err}>{errors.fullName}</span>}
-
-            <label style={styles.label}>Email Address *</label>
-            <input style={{ ...styles.input, ...(errors.email ? styles.inputErr : {}) }} type="email" placeholder="you@example.com" value={form.email} onChange={e => update("email", e.target.value)} />
-            {errors.email && <span style={styles.err}>{errors.email}</span>}
-
-            <label style={styles.label}>Phone Number *</label>
-            <input style={{ ...styles.input, ...(errors.phone ? styles.inputErr : {}) }} placeholder="10-digit mobile number" maxLength={10} value={form.phone} onChange={e => update("phone", e.target.value.replace(/\D/, ""))} />
-            {errors.phone && <span style={styles.err}>{errors.phone}</span>}
-
             <label style={styles.label}>Pickup Address *</label>
             <textarea style={{ ...styles.input, ...styles.textarea, ...(errors.address ? styles.inputErr : {}) }} placeholder="Full address for food pickup" value={form.address} onChange={e => update("address", e.target.value)} />
             {errors.address && <span style={styles.err}>{errors.address}</span>}
 
-            <label style={styles.checkRow}>
-              <input type="checkbox" checked={form.anonymous} onChange={e => update("anonymous", e.target.checked)} style={styles.checkbox} />
-              <span style={styles.checkLabel}>Donate anonymously</span>
-            </label>
-          </div>
-        )}
-
-        {/* Step 2 */}
-        {step === 2 && (
-          <div style={styles.fields}>
             <label style={styles.label}>Food Category *</label>
             <select style={{ ...styles.input, ...(errors.foodCategory ? styles.inputErr : {}) }} value={form.foodCategory} onChange={e => update("foodCategory", e.target.value)}>
               <option value="">-- Select category --</option>
@@ -181,11 +157,16 @@ export default function DonorForm() {
             <label style={styles.label}>Expiry / Best Before Date *</label>
             <input style={{ ...styles.input, ...(errors.expiryDate ? styles.inputErr : {}) }} type="date" min={today} value={form.expiryDate} onChange={e => update("expiryDate", e.target.value)} />
             {errors.expiryDate && <span style={styles.err}>{errors.expiryDate}</span>}
+
+            <label style={styles.checkRow}>
+              <input type="checkbox" checked={form.anonymous} onChange={e => update("anonymous", e.target.checked)} style={styles.checkbox} />
+              <span style={styles.checkLabel}>Donate anonymously</span>
+            </label>
           </div>
         )}
 
-        {/* Step 3 */}
-        {step === 3 && (
+        {/* Step 2 — Pickup & Submit */}
+        {step === 2 && (
           <div style={styles.fields}>
             <label style={styles.label}>Preferred Pickup Date *</label>
             <input style={{ ...styles.input, ...(errors.pickupDate ? styles.inputErr : {}) }} type="date" min={today} value={form.pickupDate} onChange={e => update("pickupDate", e.target.value)} />
@@ -201,11 +182,12 @@ export default function DonorForm() {
             {/* Summary */}
             <div style={styles.summary}>
               <p style={styles.summaryTitle}>📋 Donation Summary</p>
-              <div style={styles.summaryRow}><span>Donor</span><span>{form.anonymous ? "Anonymous" : form.fullName}</span></div>
+              <div style={styles.summaryRow}><span>Donor</span><span>{form.anonymous ? "Anonymous" : "You"}</span></div>
+              <div style={styles.summaryRow}><span>Address</span><span style={{ maxWidth: 200, textAlign: "right" }}>{form.address}</span></div>
               <div style={styles.summaryRow}><span>Food</span><span>{form.foodCategory}</span></div>
               <div style={styles.summaryRow}><span>Quantity</span><span>{form.quantity} {form.unit}</span></div>
               <div style={styles.summaryRow}><span>Expires</span><span>{form.expiryDate}</span></div>
-              <div style={styles.summaryRow}><span>Pickup</span><span>{form.pickupDate} at {form.pickupTime}</span></div>
+              {form.pickupDate && <div style={styles.summaryRow}><span>Pickup</span><span>{form.pickupDate} at {form.pickupTime}</span></div>}
             </div>
 
             <label style={styles.checkRow}>
@@ -219,7 +201,7 @@ export default function DonorForm() {
         {/* Buttons */}
         <div style={styles.btnRow}>
           {step > 1 && <button style={styles.backBtn} onClick={back}>← Back</button>}
-          {step < 3
+          {step < 2
             ? <button style={styles.nextBtn} onClick={next}>Next →</button>
             : <button style={styles.submitBtn} onClick={submit}>Submit Donation 🍱</button>
           }
@@ -236,14 +218,10 @@ const styles = {
   logoUploadWrap: { width: 52, height: 52, borderRadius: "50%", background: "linear-gradient(135deg, #f97316, #ea580c)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", overflow: "hidden", flexShrink: 0, boxShadow: "0 2px 12px rgba(249,115,22,0.4)", border: "2px solid rgba(255,255,255,0.15)" },
   logoImg: { width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" },
   logoPlaceholderIcon: { fontSize: 26, filter: "brightness(10)" },
-  logoPlaceholder: {},
-  logoPlaceholderText: {},
   brandBlock: { display: "flex", flexDirection: "column", gap: 1 },
   logo: { fontSize: 22, fontWeight: 800, letterSpacing: -0.5, lineHeight: 1.1 },
-  tagline: { color: "#ea580c", fontSize: 10, fontWeight: 700, letterSpacing: 2.5, fontStyle: "normal", margin: 0, textTransform: "uppercase" },
-  logo: { fontSize: 22, fontWeight: 800, letterSpacing: -0.5, lineHeight: 1.1 },
-  tagline: { color: "#ea580c", fontSize: 10, fontWeight: 700, letterSpacing: 2.5, fontStyle: "normal", margin: 0, textTransform: "uppercase" },
-  progressWrap: { display: "flex", alignItems: "center", gap: 0, marginBottom: 28, position: "relative" },
+  tagline: { color: "#ea580c", fontSize: 10, fontWeight: 700, letterSpacing: 2.5, textTransform: "uppercase" },
+  progressWrap: { display: "flex", alignItems: "center", gap: 0, marginBottom: 28 },
   stepItem: { display: "flex", alignItems: "center", gap: 6 },
   stepCircle: { width: 32, height: 32, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 13, transition: "all 0.3s" },
   stepLabel: { fontSize: 12, transition: "all 0.3s", whiteSpace: "nowrap" },
