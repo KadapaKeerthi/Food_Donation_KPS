@@ -241,8 +241,6 @@ const styles = {
   brandBlock: { display: "flex", flexDirection: "column", gap: 1 },
   logo: { fontSize: 22, fontWeight: 800, letterSpacing: -0.5, lineHeight: 1.1 },
   tagline: { color: "#ea580c", fontSize: 10, fontWeight: 700, letterSpacing: 2.5, fontStyle: "normal", margin: 0, textTransform: "uppercase" },
-  logo: { fontSize: 22, fontWeight: 800, letterSpacing: -0.5, lineHeight: 1.1 },
-  tagline: { color: "#ea580c", fontSize: 10, fontWeight: 700, letterSpacing: 2.5, fontStyle: "normal", margin: 0, textTransform: "uppercase" },
   progressWrap: { display: "flex", alignItems: "center", gap: 0, marginBottom: 28, position: "relative" },
   stepItem: { display: "flex", alignItems: "center", gap: 6 },
   stepCircle: { width: 32, height: 32, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 13, transition: "all 0.3s" },
