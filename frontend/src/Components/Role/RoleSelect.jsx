@@ -312,9 +312,9 @@ export default function RoleSelectPage() {
       // Update Redux store with new role if you have an action
       // dispatch(updateUserRole(selected))
       if (selected === 'donor') {
-        navigate('/donate')
+        navigate('/donor-form')
       } else {
-        navigate('/requests')
+        navigate('/receiver-form')
       }
     } catch (err) {
       setError(
