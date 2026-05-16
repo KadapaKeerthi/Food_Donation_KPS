@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Service from '../../utils/http'
 import logo from '../../assets/logo.png'
+import { useGoogleLogin } from '@react-oauth/google'
 
 const service = new Service()
 
@@ -14,7 +15,6 @@ const css = `
     background: #f3f4f6;
   }
 
-  /* ── HERO SECTION ── */
   .dd-hero {
     position: relative;
     min-height: 520px;
@@ -122,7 +122,6 @@ const css = `
     color: rgba(255,255,255,0.45);
   }
 
-  /* ── LOGIN CARD ── */
   .dd-login-card {
     background: white;
     border-radius: 20px;
@@ -139,12 +138,6 @@ const css = `
     margin-bottom: 1.75rem;
   }
 
-  .dd-card-emoji {
-    font-size: 36px;
-    display: block;
-    margin-bottom: 0.75rem;
-  }
-
   .dd-card-title {
     font-size: 22px;
     font-weight: 800;
@@ -152,10 +145,7 @@ const css = `
     margin-bottom: 4px;
   }
 
-  .dd-card-sub {
-    font-size: 13px;
-    color: #6b7280;
-  }
+  .dd-card-sub { font-size: 13px; color: #6b7280; }
 
   .dd-error {
     background: #fef2f2;
@@ -167,17 +157,8 @@ const css = `
     margin-bottom: 1rem;
   }
 
-  .dd-form {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-
-  .dd-form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
+  .dd-form { display: flex; flex-direction: column; gap: 14px; }
+  .dd-form-group { display: flex; flex-direction: column; gap: 5px; }
 
   .dd-label-row {
     display: flex;
@@ -193,12 +174,7 @@ const css = `
     text-transform: uppercase;
   }
 
-  .dd-forgot {
-    font-size: 12px;
-    color: #f97316;
-    text-decoration: none;
-  }
-
+  .dd-forgot { font-size: 12px; color: #f97316; text-decoration: none; }
   .dd-forgot:hover { text-decoration: underline; }
 
   .dd-input {
@@ -214,11 +190,7 @@ const css = `
     width: 100%;
   }
 
-  .dd-input:focus {
-    border-color: #f97316;
-    background: white;
-  }
-
+  .dd-input:focus { border-color: #f97316; background: white; }
   .dd-input::placeholder { color: #d1d5db; }
 
   .dd-btn-login {
@@ -291,11 +263,7 @@ const css = `
 
   .dd-register-anchor:hover { text-decoration: underline; }
 
-  /* ── ABOUT SECTION ── */
-  .dd-about {
-    background: white;
-    padding: 4rem 2rem;
-  }
+  .dd-about { background: white; padding: 4rem 2rem; }
 
   .dd-about-inner {
     max-width: 1100px;
@@ -345,35 +313,12 @@ const css = `
     padding: 1.25rem;
   }
 
-  .dd-about-card-icon {
-    font-size: 24px;
-    margin-bottom: 8px;
-    display: block;
-  }
+  .dd-about-card-icon { font-size: 24px; margin-bottom: 8px; display: block; }
+  .dd-about-card-title { font-size: 14px; font-weight: 700; color: #111827; margin-bottom: 4px; }
+  .dd-about-card-desc { font-size: 12px; color: #6b7280; line-height: 1.5; }
 
-  .dd-about-card-title {
-    font-size: 14px;
-    font-weight: 700;
-    color: #111827;
-    margin-bottom: 4px;
-  }
-
-  .dd-about-card-desc {
-    font-size: 12px;
-    color: #6b7280;
-    line-height: 1.5;
-  }
-
-  /* ── FOOTER ── */
-  .dd-footer {
-    background: #0f0f1a;
-    padding: 3rem 2rem 1.5rem;
-  }
-
-  .dd-footer-inner {
-    max-width: 1100px;
-    margin: 0 auto;
-  }
+  .dd-footer { background: #0f0f1a; padding: 3rem 2rem 1.5rem; }
+  .dd-footer-inner { max-width: 1100px; margin: 0 auto; }
 
   .dd-footer-grid {
     display: grid;
@@ -401,12 +346,7 @@ const css = `
     font-size: 16px;
   }
 
-  .dd-footer-logo-text {
-    font-size: 16px;
-    font-weight: 800;
-    color: white;
-  }
-
+  .dd-footer-logo-text { font-size: 16px; font-weight: 800; color: white; }
   .dd-footer-logo-text span { color: #f97316; }
 
   .dd-footer-desc {
@@ -416,10 +356,7 @@ const css = `
     margin-bottom: 1.25rem;
   }
 
-  .dd-social-row {
-    display: flex;
-    gap: 10px;
-  }
+  .dd-social-row { display: flex; gap: 10px; }
 
   .dd-social-btn {
     width: 36px;
@@ -498,15 +435,9 @@ const css = `
     gap: 8px;
   }
 
-  .dd-footer-copy {
-    font-size: 12px;
-    color: rgba(255,255,255,0.25);
-  }
+  .dd-footer-copy { font-size: 12px; color: rgba(255,255,255,0.25); }
 
-  .dd-footer-links {
-    display: flex;
-    gap: 1.5rem;
-  }
+  .dd-footer-links { display: flex; gap: 1.5rem; }
 
   .dd-footer-links a {
     font-size: 12px;
@@ -517,13 +448,8 @@ const css = `
 
   .dd-footer-links a:hover { color: #f97316; }
 
-  /* ── RESPONSIVE ── */
   @media (max-width: 768px) {
-    .dd-hero-content {
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
+    .dd-hero-content { flex-direction: column; align-items: center; text-align: center; }
     .dd-hero-stats { justify-content: center; }
     .dd-login-card { max-width: 100%; }
     .dd-about-inner { grid-template-columns: 1fr; }
@@ -539,19 +465,44 @@ export default function LoginPage() {
 
   const update = (key) => (e) => setForm({ ...form, [key]: e.target.value })
 
+  // ── Email Login ──────────────────────────────
   const handleLogin = async (e) => {
     e.preventDefault()
     setError('')
     setLoading(true)
     try {
       await service.post('auth/login', form)
-      navigate('/')
+      navigate('/select-role')
     } catch (err) {
       setError('Invalid email or password. Please try again.')
     } finally {
       setLoading(false)
     }
   }
+
+  // ── Google Login ─────────────────────────────
+  const handleGoogleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        const userInfo = await fetch(
+          'https://www.googleapis.com/oauth2/v3/userinfo',
+          { headers: { Authorization: `Bearer ${tokenResponse.access_token}` } }
+        ).then(res => res.json())
+
+        await service.post('auth/google', {
+          email: userInfo.email,
+          name: userInfo.name,
+          picture: userInfo.picture,
+          googleId: userInfo.sub
+        })
+
+        navigate('/select-role')
+      } catch (err) {
+        setError('Google login failed. Please try again.')
+      }
+    },
+    onError: () => setError('Google login failed. Please try again.')
+  })
 
   return (
     <>
@@ -561,8 +512,6 @@ export default function LoginPage() {
         {/* ── HERO + LOGIN ── */}
         <section className="dd-hero">
           <div className="dd-hero-bg" />
-
-          {/* Real hunger image from Unsplash */}
           <img
             className="dd-hero-img"
             src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1400&q=80"
@@ -602,7 +551,11 @@ export default function LoginPage() {
             {/* Right — Login Card */}
             <div className="dd-login-card">
               <div className="dd-card-top">
-                <img src={logo} alt="DonateDish" style={{ width: 90, height: 90, objectFit: 'contain', marginBottom: '0.75rem' }} />
+                <img
+                  src={logo}
+                  alt="DonateDish"
+                  style={{ width: 90, height: 90, objectFit: 'contain', marginBottom: '0.75rem' }}
+                />
                 <h2 className="dd-card-title">Welcome back</h2>
                 <p className="dd-card-sub">Sign in to continue donating</p>
               </div>
@@ -648,7 +601,11 @@ export default function LoginPage() {
 
               <div className="dd-divider"><span>or</span></div>
 
-              <button className="dd-btn-google">
+              <button
+                type="button"
+                className="dd-btn-google"
+                onClick={() => handleGoogleLogin()}
+              >
                 <svg width="18" height="18" viewBox="0 0 18 18">
                   <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
                   <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
@@ -707,8 +664,6 @@ export default function LoginPage() {
         <footer className="dd-footer">
           <div className="dd-footer-inner">
             <div className="dd-footer-grid">
-
-              {/* Brand */}
               <div>
                 <Link to="/" className="dd-footer-logo">
                   <div className="dd-footer-logo-icon">🍽️</div>
@@ -719,15 +674,14 @@ export default function LoginPage() {
                   one meal at a time. Join us in making a difference.
                 </p>
                 <div className="dd-social-row">
-                  <a href="https://instagram.com" target="_blank" rel="noreferrer" className="dd-social-btn" title="Instagram">📸</a>
-                  <a href="https://twitter.com" target="_blank" rel="noreferrer" className="dd-social-btn" title="Twitter">🐦</a>
-                  <a href="https://facebook.com" target="_blank" rel="noreferrer" className="dd-social-btn" title="Facebook">👥</a>
-                  <a href="https://youtube.com" target="_blank" rel="noreferrer" className="dd-social-btn" title="YouTube">▶️</a>
-                  <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="dd-social-btn" title="LinkedIn">💼</a>
+                  <a href="https://instagram.com" target="_blank" rel="noreferrer" className="dd-social-btn">📸</a>
+                  <a href="https://twitter.com" target="_blank" rel="noreferrer" className="dd-social-btn">🐦</a>
+                  <a href="https://facebook.com" target="_blank" rel="noreferrer" className="dd-social-btn">👥</a>
+                  <a href="https://youtube.com" target="_blank" rel="noreferrer" className="dd-social-btn">▶️</a>
+                  <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="dd-social-btn">💼</a>
                 </div>
               </div>
 
-              {/* Quick Links */}
               <div>
                 <p className="dd-footer-col-title">Quick Links</p>
                 <Link to="/" className="dd-footer-link">Home</Link>
@@ -737,7 +691,6 @@ export default function LoginPage() {
                 <Link to="/login" className="dd-footer-link">Sign In</Link>
               </div>
 
-              {/* Contact */}
               <div>
                 <p className="dd-footer-col-title">Contact Us</p>
                 <a href="mailto:hello@donatedish.org" className="dd-contact-btn">
