@@ -1,89 +1,96 @@
-import {
-  Button,
-  Center,
-  Container,
-  Stack,
-  Text,
-  Title,
-} from "@mantine/core";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { getIsLoggedIn } from "../../redux/slices/User";
-import { IconLink } from "@tabler/icons-react";
-
-const Home = () => {
-  const isLoggedIn = useSelector(getIsLoggedIn);
-  const navigate = useNavigate();
-
+export default function Home() {
   return (
-    <div
-      style={{
-        height: "100vh",
-        width: "100%",
-        background: "linear-gradient(135deg, #d9afd9 0%, #97d9e1 100%)",
-        position: "relative",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        overflow: "hidden",
-      }}
-    >
-      <Container size="sm" style={{ position: "relative", zIndex: 1 }}>
-        <div
-          style={{
-            backdropFilter: "blur(20px)",
-            background: "rgba(255, 255, 255, 0.1)",
-            border: "1px solid rgba(255, 255, 255, 0.2)",
-            borderRadius: "30px",
-            padding: "3rem 2rem",
-            boxShadow: "0 8px 40px rgba(0, 0, 0, 0.2)",
-            textAlign: "center",
-          }}
-        >
-          <Center>
-            <IconLink size={48} color="#ffffff" />
-          </Center>
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #0f0f1a, #16213e)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'column',
+      gap: '1rem',
+      padding: '2rem'
+    }}>
+      <div style={{
+        background: 'rgba(249,115,22,0.15)',
+        border: '1px solid rgba(249,115,22,0.3)',
+        borderRadius: '20px',
+        padding: '5px 16px',
+        fontSize: '12px',
+        color: '#fdba74',
+        fontWeight: 600,
+        letterSpacing: '1px',
+        marginBottom: '0.5rem'
+      }}>
+        🍽️ SHARE TODAY · NOURISH TOMORROW
+      </div>
 
-          <Title
-            order={1}
-            style={{
-              color: "white",
-              fontWeight: 700,
-              fontSize: "2.8rem",
-              marginTop: "1rem",
-            }}
-          >
-            Your App Name
-          </Title>
+      <h1 style={{
+        fontFamily: 'Georgia, serif',
+        fontSize: 'clamp(32px, 5vw, 56px)',
+        color: 'white',
+        textAlign: 'center',
+        lineHeight: 1.2,
+        maxWidth: 600
+      }}>
+        Every meal shared is a <span style={{ color: '#f97316' }}>life changed</span>
+      </h1>
 
-          <Text
-            size="xl"
-fw={700}
-            style={{
-              color: "#f1f1f1",
-              marginTop: "0.8rem",
-              marginBottom: "2rem",
-              fontWeight: 400,
-            }}
-          >
-            
-          </Text>
+      <p style={{
+        fontSize: 16,
+        color: 'rgba(255,255,255,0.55)',
+        textAlign: 'center',
+        maxWidth: 480,
+        lineHeight: 1.7
+      }}>
+        Join thousands of donors reducing food waste and
+        feeding those in need across your community.
+      </p>
 
-          <Button
-            size="md"
-            radius="xl"
-            variant="gradient"
-            gradient={{ from: "grape", to: "indigo" }}
-            onClick={() =>
-              isLoggedIn ? navigate("/url/shortener") : navigate("/login")
-            }
-          >
-            Get Started
-          </Button>
-        </div>
-      </Container>
+      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', marginTop: '0.5rem' }}>
+        <button style={{
+          padding: '12px 28px',
+          background: '#f97316',
+          border: 'none',
+          borderRadius: 28,
+          color: 'white',
+          fontSize: 15,
+          fontWeight: 700,
+          cursor: 'pointer',
+          boxShadow: '0 4px 20px rgba(249,115,22,0.4)'
+        }}>
+          Start Donating →
+        </button>
+        <button style={{
+          padding: '12px 28px',
+          background: 'transparent',
+          border: '1.5px solid rgba(255,255,255,0.3)',
+          borderRadius: 28,
+          color: 'white',
+          fontSize: 15,
+          cursor: 'pointer'
+        }}>
+          Learn More
+        </button>
+      </div>
+
+      <div style={{
+        display: 'flex',
+        gap: '3rem',
+        marginTop: '2.5rem',
+        flexWrap: 'wrap',
+        justifyContent: 'center'
+      }}>
+        {[
+          { num: '12,400+', label: 'Meals Donated' },
+          { num: '3,200+', label: 'Families Helped' },
+          { num: '98', label: 'Cities' },
+        ].map(s => (
+          <div key={s.label} style={{ textAlign: 'center' }}>
+            <p style={{ fontSize: 26, fontWeight: 800, color: '#f97316', margin: 0 }}>{s.num}</p>
+            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', margin: '4px 0 0' }}>{s.label}</p>
+          </div>
+        ))}
+      </div>
     </div>
-  );
-};
-
-export default Home;
+  )
+}

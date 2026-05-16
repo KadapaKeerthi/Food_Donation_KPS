@@ -1,109 +1,58 @@
-import {
-  Box,
-  Burger,
-  Button,
-  Divider,
-  Drawer,
-  Group,
-  ScrollArea,
-  Text,
-} from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-import { IconLogin } from '@tabler/icons-react';
-import { NavLink, Link } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import {
-  getIsLoggedIn,
-  removeUser,
-} from '../../redux/slices/User';
-import classes from './HeaderMegaMenu.module.css';
-
-const navLinks = [
-  { to: '/', label: 'Home' },
-  { to: '/profile', label: 'Profile' },
-];
+import { useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
+import styles from './HeaderMegaMenu.module.css'
 
 export function HeaderMegaMenu() {
-  const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
-  const isLoggedIn = useSelector(getIsLoggedIn);
-  const dispatch = useDispatch();
-
-  const navItems = navLinks.map((link) => (
-    <NavLink
-      key={link.to}
-      to={link.to}
-      className={({ isActive }) =>
-        `${classes.link} ${isActive ? classes.activeLink : ''}`
-      }
-      onClick={closeDrawer}
-    >
-      {link.label}
-    </NavLink>
-  ));
+  const [menuOpen, setMenuOpen] = useState(false)
+  const location = useLocation()
+  const isLoginPage = location.pathname === '/login'
 
   return (
-    <Box pb={0}>
-      <header className={classes.header}>
-        <Group justify="space-between" h="100%">
-          <Text component={Link} to="/" className={classes.logo}>
-            Being  <Text component="span">Zero</Text>
-          </Text>
+    <div style={{ position: 'relative' }}>
+      <header className={styles.header}>
 
-          <Group h="100%" gap={0} visibleFrom="sm">
-            {isLoggedIn && navItems}
-          </Group>
+        {/* Logo — top left */}
+        <Link to="/" className={styles.logo}>
+          <div className={styles.logoIcon}>🍽️</div>
+          <div className={styles.logoTextWrap}>
+            <span className={styles.logoText}>Donate<span>Dish</span></span>
+            <span className={styles.logoTagline}>Feed the need</span>
+          </div>
+        </Link>
 
-          <Group visibleFrom="sm">
-            {isLoggedIn ? (
-              <Button variant="default" onClick={() => dispatch(removeUser())}>
-                Logout
-              </Button>
-            ) : (
-              <Button
-                variant="default"
-                component={Link}
-                to="/login"
-                leftSection={<IconLogin />}
-              >
-                Log in
-              </Button>
-            )}
-          </Group>
+        {/* Auth Buttons — top right */}
+        <div className={styles.actions}>
+          {isLoginPage ? (
+            <Link to="/register" className={styles.btnPrimary}>
+              Create Account
+            </Link>
+          ) : (
+            <>
+              <Link to="/login" className={styles.btnOutline}>Sign In</Link>
+              <Link to="/register" className={styles.btnPrimary}>Register</Link>
+            </>
+          )}
+        </div>
 
-          <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
-        </Group>
+        {/* Mobile Burger */}
+        <button
+          className={styles.burger}
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
+        >
+          <span className={`${styles.line} ${menuOpen ? styles.open1 : ''}`} />
+          <span className={`${styles.line} ${menuOpen ? styles.open2 : ''}`} />
+          <span className={`${styles.line} ${menuOpen ? styles.open3 : ''}`} />
+        </button>
       </header>
 
-      <Drawer
-        opened={drawerOpened}
-        onClose={closeDrawer}
-        size="100%"
-        padding="md"
-        title="Navigation"
-        hiddenFrom="sm"
-        zIndex={1000000}
-      >
-        <ScrollArea h="calc(100vh - 80px)" mx="-md">
-          <Divider my="sm" />
-          {isLoggedIn && (
-            <Box className={classes.drawerLinks}>
-              {navItems}
-            </Box>
-          )}
-          <Divider my="sm" />
-          <Group justify="center" grow pb="xl" px="md">
-            {isLoggedIn ? (
-              <Button fullWidth onClick={() => { dispatch(removeUser()); closeDrawer(); }}>
-                Logout
-              </Button>
-            ) : (
-              <Button component={Link} to="/login" fullWidth onClick={closeDrawer}>
-                Login
-              </Button>
-            )}
-          </Group>
-        </ScrollArea>
-      </Drawer>
-    </Box>
-  );
+      {/* Mobile Drawer */}
+      {menuOpen && (
+        <div className={styles.drawer}>
+          <Link to="/login" className={styles.drawerLink} onClick={() => setMenuOpen(false)}>Sign In</Link>
+          <Link to="/register" className={styles.drawerLink} onClick={() => setMenuOpen(false)}>Register</Link>
+        </div>
+      )}
+    </div>
+  )
 }
