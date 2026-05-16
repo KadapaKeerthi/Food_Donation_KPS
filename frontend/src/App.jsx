@@ -5,7 +5,7 @@ import Home from './Pages/Home/Home'
 import RegisterPage from './components/register/Register'
 import RoleSelectPage from './components/role/RoleSelect'
 import DonorForm from './components/Forms/DonarForm'
-import ReceiverForm from './components/Forms/Receiver'
+import ReceiverForm from './Components/Forms/ReceiverForm'
 export default function App() {
   return (
     <BrowserRouter>
