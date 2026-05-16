@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import Service from '../../utils/http'
 import logo from '../../assets/logo.png'
 import { GoogleLogin } from '@react-oauth/google'
+import { useDispatch } from 'react-redux'
+import { setUser } from '../../redux/slices/User'
 
 const service = new Service()
 
@@ -450,6 +452,7 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const update = (key) => (e) => setForm({ ...form, [key]: e.target.value })
 
@@ -463,8 +466,17 @@ export default function LoginPage() {
     }
     setLoading(true)
     try {
-      await service.post('auth/login', form)
-      navigate('/select-role')   // ← role selection after login
+      const res = await service.post('auth/login', form)
+      // res is already res.data from axios (see http.js: return res.data)
+      // your backend sends: { status, message, data: { _id, name, email, avatar, role, token } }
+      dispatch(setUser({
+        name: res.data.name,
+        email: res.data.email,
+        avatar: res.data.avatar,
+        token: res.data.token,
+        isLoggedIn: true
+      }))
+      navigate('/select-role')
     } catch (err) {
       setError(
         err?.response?.data?.message ||
@@ -476,16 +488,21 @@ export default function LoginPage() {
   }
 
   // ── Google Login ─────────────────────────────
-  // Uses GoogleLogin component which sends ID token
-  // Backend loginWithGoogle expects { token } = req.body
   const handleGoogleSuccess = async (credentialResponse) => {
     setError('')
     setLoading(true)
     try {
-      await service.post('auth/google', {
-        token: credentialResponse.credential  // ← ID token backend verifies
+      const res = await service.post('auth/google', {
+        token: credentialResponse.credential
       })
-      navigate('/select-role')   // ← role selection after Google login
+      dispatch(setUser({
+        name: res.data.name,
+        email: res.data.email,
+        avatar: res.data.avatar,
+        token: res.data.token,
+        isLoggedIn: true
+      }))
+      navigate('/select-role')
     } catch (err) {
       setError(
         err?.response?.data?.message ||
