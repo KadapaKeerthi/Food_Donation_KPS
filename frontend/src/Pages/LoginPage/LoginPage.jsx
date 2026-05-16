@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Service from '../../utils/http'
 import logo from '../../assets/logo.png'
-import { useGoogleLogin } from '@react-oauth/google'
+import { GoogleLogin } from '@react-oauth/google'
 
 const service = new Service()
 
@@ -32,6 +32,7 @@ const css = `
       radial-gradient(ellipse at 20% 50%, rgba(249,115,22,0.12) 0%, transparent 55%),
       radial-gradient(ellipse at 80% 20%, rgba(99,102,241,0.1) 0%, transparent 50%);
     pointer-events: none;
+    z-index: 0;
   }
 
   .dd-hero-overlay {
@@ -43,6 +44,7 @@ const css = `
       rgba(15,15,26,0.2) 100%
     );
     pointer-events: none;
+    z-index: 1;
   }
 
   .dd-hero-img {
@@ -52,11 +54,13 @@ const css = `
     height: 100%;
     object-fit: cover;
     opacity: 0.35;
+    pointer-events: none;
+    z-index: 0;
   }
 
   .dd-hero-content {
     position: relative;
-    z-index: 2;
+    z-index: 10;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -66,10 +70,7 @@ const css = `
     gap: 3rem;
   }
 
-  .dd-hero-text {
-    flex: 1;
-    max-width: 520px;
-  }
+  .dd-hero-text { flex: 1; max-width: 520px; }
 
   .dd-badge {
     display: inline-flex;
@@ -104,11 +105,7 @@ const css = `
     max-width: 420px;
   }
 
-  .dd-hero-stats {
-    display: flex;
-    gap: 2rem;
-    flex-wrap: wrap;
-  }
+  .dd-hero-stats { display: flex; gap: 2rem; flex-wrap: wrap; }
 
   .dd-hero-stat-num {
     font-size: 24px;
@@ -117,10 +114,7 @@ const css = `
     display: block;
   }
 
-  .dd-hero-stat-label {
-    font-size: 12px;
-    color: rgba(255,255,255,0.45);
-  }
+  .dd-hero-stat-label { font-size: 12px; color: rgba(255,255,255,0.45); }
 
   .dd-login-card {
     background: white;
@@ -131,12 +125,11 @@ const css = `
     box-shadow: 0 20px 60px rgba(0,0,0,0.35);
     border: 1px solid rgba(255,255,255,0.1);
     flex-shrink: 0;
+    position: relative;
+    z-index: 20;
   }
 
-  .dd-card-top {
-    text-align: center;
-    margin-bottom: 1.75rem;
-  }
+  .dd-card-top { text-align: center; margin-bottom: 1.75rem; }
 
   .dd-card-title {
     font-size: 22px;
@@ -155,6 +148,31 @@ const css = `
     font-size: 13px;
     color: #dc2626;
     margin-bottom: 1rem;
+  }
+
+  .dd-google-wrap {
+    display: flex;
+    justify-content: center;
+    position: relative;
+    z-index: 21;
+    margin-bottom: 4px;
+  }
+
+  .dd-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 16px 0;
+    font-size: 12px;
+    color: #9ca3af;
+  }
+
+  .dd-divider::before,
+  .dd-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e5e7eb;
   }
 
   .dd-form { display: flex; flex-direction: column; gap: 14px; }
@@ -188,10 +206,29 @@ const css = `
     transition: border-color 0.2s, background 0.2s;
     font-family: inherit;
     width: 100%;
+    position: relative;
+    z-index: 21;
+    pointer-events: auto;
   }
 
   .dd-input:focus { border-color: #f97316; background: white; }
   .dd-input::placeholder { color: #d1d5db; }
+
+  .dd-input-wrap { position: relative; z-index: 21; }
+
+  .dd-input-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 16px;
+    color: #9ca3af;
+    user-select: none;
+    z-index: 22;
+  }
+
+  .dd-input-with-icon { padding-right: 40px; }
 
   .dd-btn-login {
     width: 100%;
@@ -207,46 +244,12 @@ const css = `
     transition: opacity 0.2s, transform 0.15s;
     box-shadow: 0 4px 16px rgba(249,115,22,0.4);
     font-family: inherit;
+    position: relative;
+    z-index: 21;
   }
 
   .dd-btn-login:hover { opacity: 0.92; transform: translateY(-1px); }
   .dd-btn-login:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-  .dd-divider {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 16px 0;
-    font-size: 12px;
-    color: #9ca3af;
-  }
-
-  .dd-divider::before,
-  .dd-divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: #e5e7eb;
-  }
-
-  .dd-btn-google {
-    width: 100%;
-    padding: 11px;
-    background: white;
-    border: 1.5px solid #e5e7eb;
-    border-radius: 24px;
-    font-size: 14px;
-    font-family: inherit;
-    color: #111827;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    transition: border-color 0.2s, background 0.2s;
-  }
-
-  .dd-btn-google:hover { border-color: #cbd5e1; background: #f9fafb; }
 
   .dd-register-link {
     text-align: center;
@@ -292,19 +295,9 @@ const css = `
   }
 
   .dd-about h2 span { color: #f97316; }
+  .dd-about p { font-size: 15px; color: #6b7280; line-height: 1.75; margin-bottom: 1rem; }
 
-  .dd-about p {
-    font-size: 15px;
-    color: #6b7280;
-    line-height: 1.75;
-    margin-bottom: 1rem;
-  }
-
-  .dd-about-cards {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
+  .dd-about-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
   .dd-about-card {
     background: #fff7ed;
@@ -418,12 +411,7 @@ const css = `
   }
 
   .dd-contact-btn:hover { opacity: 0.9; transform: translateY(-1px); }
-
-  .dd-footer-email {
-    font-size: 12px;
-    color: rgba(255,255,255,0.3);
-    margin-top: 8px;
-  }
+  .dd-footer-email { font-size: 12px; color: rgba(255,255,255,0.3); margin-top: 8px; }
 
   .dd-footer-bottom {
     border-top: 1px solid rgba(255,255,255,0.08);
@@ -436,7 +424,6 @@ const css = `
   }
 
   .dd-footer-copy { font-size: 12px; color: rgba(255,255,255,0.25); }
-
   .dd-footer-links { display: flex; gap: 1.5rem; }
 
   .dd-footer-links a {
@@ -461,6 +448,7 @@ export default function LoginPage() {
   const [form, setForm] = useState({ email: '', password: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate()
 
   const update = (key) => (e) => setForm({ ...form, [key]: e.target.value })
@@ -469,47 +457,50 @@ export default function LoginPage() {
   const handleLogin = async (e) => {
     e.preventDefault()
     setError('')
+    if (!form.email || !form.password) {
+      setError('Please enter both email and password.')
+      return
+    }
     setLoading(true)
     try {
       await service.post('auth/login', form)
-      navigate('/select-role')
+      navigate('/select-role')   // ← role selection after login
     } catch (err) {
-      setError('Invalid email or password. Please try again.')
+      setError(
+        err?.response?.data?.message ||
+        'Invalid email or password. Please try again.'
+      )
     } finally {
       setLoading(false)
     }
   }
 
   // ── Google Login ─────────────────────────────
-  const handleGoogleLogin = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      try {
-        const userInfo = await fetch(
-          'https://www.googleapis.com/oauth2/v3/userinfo',
-          { headers: { Authorization: `Bearer ${tokenResponse.access_token}` } }
-        ).then(res => res.json())
-
-        await service.post('auth/google', {
-          email: userInfo.email,
-          name: userInfo.name,
-          picture: userInfo.picture,
-          googleId: userInfo.sub
-        })
-
-        navigate('/select-role')
-      } catch (err) {
-        setError('Google login failed. Please try again.')
-      }
-    },
-    onError: () => setError('Google login failed. Please try again.')
-  })
+  // Uses GoogleLogin component which sends ID token
+  // Backend loginWithGoogle expects { token } = req.body
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setError('')
+    setLoading(true)
+    try {
+      await service.post('auth/google', {
+        token: credentialResponse.credential  // ← ID token backend verifies
+      })
+      navigate('/select-role')   // ← role selection after Google login
+    } catch (err) {
+      setError(
+        err?.response?.data?.message ||
+        'Google login failed. Please try again.'
+      )
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <>
       <style>{css}</style>
       <div className="dd-page">
 
-        {/* ── HERO + LOGIN ── */}
         <section className="dd-hero">
           <div className="dd-hero-bg" />
           <img
@@ -562,32 +553,60 @@ export default function LoginPage() {
 
               {error && <div className="dd-error">⚠️ {error}</div>}
 
+              {/* ── Google Login ── */}
+              <div className="dd-google-wrap">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => setError('Google login failed. Please try again.')}
+                  width="340"
+                  theme="outline"
+                  size="large"
+                  text="continue_with"
+                  shape="pill"
+                />
+              </div>
+
+              <div className="dd-divider"><span>or sign in with email</span></div>
+
+              {/* ── Email Form ── */}
               <form className="dd-form" onSubmit={handleLogin}>
                 <div className="dd-form-group">
-                  <label className="dd-label">Email address</label>
+                  <label className="dd-label" htmlFor="dd-email">Email address</label>
                   <input
+                    id="dd-email"
                     type="email"
                     className="dd-input"
                     placeholder="you@example.com"
                     value={form.email}
                     onChange={update('email')}
+                    autoComplete="email"
                     required
                   />
                 </div>
 
                 <div className="dd-form-group">
                   <div className="dd-label-row">
-                    <label className="dd-label">Password</label>
+                    <label className="dd-label" htmlFor="dd-password">Password</label>
                     <Link to="/forgot-password" className="dd-forgot">Forgot?</Link>
                   </div>
-                  <input
-                    type="password"
-                    className="dd-input"
-                    placeholder="••••••••"
-                    value={form.password}
-                    onChange={update('password')}
-                    required
-                  />
+                  <div className="dd-input-wrap">
+                    <input
+                      id="dd-password"
+                      type={showPassword ? 'text' : 'password'}
+                      className="dd-input dd-input-with-icon"
+                      placeholder="••••••••"
+                      value={form.password}
+                      onChange={update('password')}
+                      autoComplete="current-password"
+                      required
+                    />
+                    <span
+                      className="dd-input-icon"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? '🙈' : '👁️'}
+                    </span>
+                  </div>
                 </div>
 
                 <button
@@ -598,22 +617,6 @@ export default function LoginPage() {
                   {loading ? 'Signing in...' : 'Sign In →'}
                 </button>
               </form>
-
-              <div className="dd-divider"><span>or</span></div>
-
-              <button
-                type="button"
-                className="dd-btn-google"
-                onClick={() => handleGoogleLogin()}
-              >
-                <svg width="18" height="18" viewBox="0 0 18 18">
-                  <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
-                  <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
-                  <path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/>
-                  <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z"/>
-                </svg>
-                Continue with Google
-              </button>
 
               <p className="dd-register-link">
                 New here?{' '}
@@ -685,8 +688,8 @@ export default function LoginPage() {
               <div>
                 <p className="dd-footer-col-title">Quick Links</p>
                 <Link to="/" className="dd-footer-link">Home</Link>
-                <Link to="/donate" className="dd-footer-link">Donate Food</Link>
-                <Link to="/requests" className="dd-footer-link">Food Requests</Link>
+                <Link to="/donor-form" className="dd-footer-link">Donate Food</Link>
+                <Link to="/receiver-form" className="dd-footer-link">Food Requests</Link>
                 <Link to="/about" className="dd-footer-link">About Us</Link>
                 <Link to="/login" className="dd-footer-link">Sign In</Link>
               </div>
