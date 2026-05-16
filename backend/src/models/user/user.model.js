@@ -1,9 +1,10 @@
-import { Schema, model } from "mongoose";
+import bcrypt from "bcryptjs";
 
 const userSchema = new Schema(
   {
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true },
+    password: { type: String, default: null },  // ← ADD THIS
     avatar: { type: String, default: "https://avatar.iran.liara.run/public" },
     role: {
       type: String,
@@ -22,5 +23,17 @@ const userSchema = new Schema(
   },
   { timestamps: true }
 );
+
+// Auto-hash password before saving
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password") || !this.password) return next();
+  this.password = await bcrypt.hash(this.password, 12);
+  next();
+});
+
+// Method to compare passwords
+userSchema.methods.comparePassword = async function (plain) {
+  return bcrypt.compare(plain, this.password);
+};
 
 export const User = model("User", userSchema);
