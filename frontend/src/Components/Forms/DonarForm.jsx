@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const foodCategories = [
   "Cooked Meals", "Raw Vegetables", "Fruits", "Dairy Products",
@@ -56,9 +56,7 @@ export default function DonorForm() {
     if (Object.keys(e).length) { setErrors(e); return; }
     setStep(s => s + 1);
   };
-
   const back = () => setStep(s => s - 1);
-
   const submit = () => {
     const e = validateStep(2);
     if (Object.keys(e).length) { setErrors(e); return; }
@@ -81,23 +79,17 @@ export default function DonorForm() {
         <button style={styles.resetBtn} onClick={() => {
           setSubmitted(false); setStep(1);
           setForm({ address:"",foodCategory:"",foodDescription:"",quantity:"",unit:"kg",expiryDate:"",pickupDate:"",pickupTime:"",specialNotes:"",anonymous:false,agreeTerms:false });
-        }}>
-          Donate Again
-        </button>
+        }}>Donate Again</button>
       </div>
     </div>
   );
 
   return (
     <div style={styles.page}>
-      {/* Header */}
       <div style={styles.header}>
         <div style={styles.navbar}>
           <label style={styles.logoUploadWrap} title="Click to upload your logo">
-            {logoUrl
-              ? <img src={logoUrl} alt="Logo" style={styles.logoImg} />
-              : <span style={styles.logoPlaceholderIcon}>🍽️</span>
-            }
+            {logoUrl ? <img src={logoUrl} alt="Logo" style={styles.logoImg} /> : <span style={styles.logoPlaceholderIcon}>🍽️</span>}
             <input type="file" accept="image/*" style={{ display: "none" }} onChange={handleLogoUpload} />
           </label>
           <div style={styles.brandBlock}>
@@ -110,7 +102,6 @@ export default function DonorForm() {
         </div>
       </div>
 
-      {/* Progress — 2 steps */}
       <div style={styles.progressWrap}>
         {steps.map((label, i) => (
           <div key={i} style={styles.stepItem}>
@@ -123,11 +114,9 @@ export default function DonorForm() {
         ))}
       </div>
 
-      {/* Card */}
       <div style={styles.card}>
         <h2 style={styles.cardTitle}>{steps[step - 1]}</h2>
 
-        {/* Step 1 — Food Details + Address */}
         {step === 1 && (
           <div style={styles.fields}>
             <label style={styles.label}>Pickup Address *</label>
@@ -165,7 +154,6 @@ export default function DonorForm() {
           </div>
         )}
 
-        {/* Step 2 — Pickup & Submit */}
         {step === 2 && (
           <div style={styles.fields}>
             <label style={styles.label}>Preferred Pickup Date *</label>
@@ -179,7 +167,6 @@ export default function DonorForm() {
             <label style={styles.label}>Special Notes <span style={{ color: "#94a3b8", fontWeight: 400 }}>(optional)</span></label>
             <textarea style={{ ...styles.input, ...styles.textarea }} placeholder="Any handling instructions, allergies, packaging info..." value={form.specialNotes} onChange={e => update("specialNotes", e.target.value)} />
 
-            {/* Summary */}
             <div style={styles.summary}>
               <p style={styles.summaryTitle}>📋 Donation Summary</p>
               <div style={styles.summaryRow}><span>Donor</span><span>{form.anonymous ? "Anonymous" : "You"}</span></div>
@@ -198,7 +185,6 @@ export default function DonorForm() {
           </div>
         )}
 
-        {/* Buttons */}
         <div style={styles.btnRow}>
           {step > 1 && <button style={styles.backBtn} onClick={back}>← Back</button>}
           {step < 2
