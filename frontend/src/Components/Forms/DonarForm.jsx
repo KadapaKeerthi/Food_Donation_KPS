@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 
 const foodCategories = [
   "Cooked Meals", "Raw Vegetables", "Fruits", "Dairy Products",
